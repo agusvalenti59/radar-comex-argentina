@@ -2,4 +2,4 @@ env: dev
 storage_account: sttradeinteldev
 sources:
   comtrade:
-    years_back: 3
+    years_back: 6   # 6 años x 20 países x 3 pedidos = 360 llamadas (< 500/día del plan gratuito)

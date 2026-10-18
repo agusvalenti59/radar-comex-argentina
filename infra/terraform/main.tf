@@ -73,6 +73,7 @@ module "unity_catalog" {
   }
   env                  = var.env
   metastore_id         = var.metastore_id
+  assign_metastore     = var.assign_metastore
   workspace_numeric_id = module.databricks.workspace_numeric_id
   access_connector_id  = module.databricks.access_connector_id
   storage_account_name = module.storage.name

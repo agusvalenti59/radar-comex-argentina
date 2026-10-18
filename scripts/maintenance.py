@@ -4,13 +4,14 @@ En prod se puede reemplazar por Predictive Optimization de Unity Catalog (ver AD
 """
 
 import argparse
+import os
 
 from pyspark.sql import SparkSession
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--catalog", required=True)
+ap.add_argument("--catalog", default=f"trade_{os.environ.get('TRADE_INTEL_ENV', 'dev')}")
 ap.add_argument("--retain-hours", type=int, default=168)
-args = ap.parse_args()
+args, _ = ap.parse_known_args()  # tolera --python-params pensados para otras tareas
 spark = SparkSession.builder.getOrCreate()
 
 for schema in ("silver", "gold"):

@@ -12,7 +12,8 @@ def bootstrap(description: str, extra_args=None):
     parser.add_argument("--env", default=None, help="dev | prod | local")
     for args, kwargs in extra_args or []:
         parser.add_argument(*args, **kwargs)
-    ns = parser.parse_args()
+    # parse_known_args: `bundle run --python-params` manda los mismos parámetros a todas las tareas
+    ns, _ = parser.parse_known_args()
     settings = load_settings(ns.env)
     spark = get_spark(warehouse_dir=settings.raw["storage"].get("warehouse_dir"))
     io = TableIO(spark, settings)

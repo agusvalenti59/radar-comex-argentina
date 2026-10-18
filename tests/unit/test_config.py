@@ -5,7 +5,7 @@ def test_env_overrides_and_rendering():
     s = load_settings("dev")
     assert s.catalog == "trade_dev"
     assert s.raw["storage"]["landing_root"] == "abfss://landing@sttradeinteldev.dfs.core.windows.net"
-    assert s.source("comtrade")["years_back"] == 3
+    assert s.source("comtrade")["years_back"] == 6
     assert "080550" in s.product_universe
 
 

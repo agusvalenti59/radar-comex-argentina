@@ -117,10 +117,11 @@ make demo             # landing → bronze → silver → gold sobre data/sample
 4. **Vistas**: ejecutar `sql/01_semantic_views.sql` y `sql/02_governance.sql` en el catálogo `trade_dev`.
 5. **Power BI**: conectar al SQL Warehouse según [powerbi/README.md](powerbi/README.md).
 
-Paso a paso y operación diaria: [docs/runbook.md](docs/runbook.md).
+Paso a paso detallado: [docs/guia-paso-a-paso.md](docs/guia-paso-a-paso.md). Operación diaria: [docs/runbook.md](docs/runbook.md).
 
 ## Documentación
 
+- **[Guía paso a paso para ejecutarlo por tu cuenta](docs/guia-paso-a-paso.md)**
 - [Arquitectura y decisiones](docs/architecture.md)
 - [Plan por fases (roadmap)](docs/roadmap.md)
 - [Fuentes de datos](docs/data-sources.md)

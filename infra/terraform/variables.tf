@@ -16,7 +16,13 @@ variable "project" {
 }
 variable "metastore_id" {
   type        = string
-  description = "Metastore de Unity Catalog de la región (uno por región, se crea una sola vez a nivel cuenta)"
+  default     = ""
+  description = "Metastore de Unity Catalog de la región. Sólo hace falta si assign_metastore = true"
+}
+variable "assign_metastore" {
+  type        = bool
+  default     = false
+  description = "true si el workspace NO quedó con Unity Catalog habilitado automáticamente"
 }
 variable "data_engineers_group" {
   type    = string

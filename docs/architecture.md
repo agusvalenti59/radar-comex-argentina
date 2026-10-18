@@ -59,7 +59,7 @@ flowchart TB
 | Catálogo | `trade_dev` | `trade_prod` |
 | Storage | LRS | ZRS |
 | Bundle mode | development (prefijo por usuario, schedules pausados) | production (run_as service principal) |
-| Comtrade años | 3 | 6 |
+| Comtrade años | 6 | 6 |
 | Deploy | push a `main` | tag `v*` + aprobación manual |
 | Warehouse | 2X-Small, 1 cluster | Small, hasta 3 clusters |
 

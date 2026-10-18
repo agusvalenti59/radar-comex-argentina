@@ -6,6 +6,7 @@ terraform {
 
 variable "env" { type = string }
 variable "metastore_id" { type = string }
+variable "assign_metastore" { type = bool }
 variable "workspace_numeric_id" { type = string }
 variable "access_connector_id" { type = string }
 variable "storage_account_name" { type = string }
@@ -25,7 +26,10 @@ locals {
   }
 }
 
+# Los workspaces nuevos en Azure suelen venir con Unity Catalog ya habilitado (metastore
+# regional asignado automáticamente). Sólo asignar a mano si no es el caso.
 resource "databricks_metastore_assignment" "this" {
+  count        = var.assign_metastore ? 1 : 0
   metastore_id = var.metastore_id
   workspace_id = var.workspace_numeric_id
 }

@@ -38,6 +38,8 @@ def run(io, settings, ref_dir: str | None = None) -> dict:
         parts.append(trade_flows.normalize_comtrade(io.read("bronze", "comtrade_raw"), countries))
     if io.exists("bronze", "indec_exports_raw"):
         parts.append(trade_flows.normalize_indec_exports(io.read("bronze", "indec_exports_raw"), countries))
+    if not parts:
+        raise RuntimeError("No hay datos en bronze (comtrade_raw ni indec_exports_raw). Corré antes la ingesta y bronze.")
     flows = parts[0]
     for p in parts[1:]:
         flows = flows.unionByName(p)

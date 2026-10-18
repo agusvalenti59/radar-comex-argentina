@@ -2,6 +2,7 @@ terraform {
   required_version = ">= 1.6"
   required_providers {
     azurerm    = { source = "hashicorp/azurerm", version = "~> 4.10" }
+    azuread    = { source = "hashicorp/azuread", version = "~> 3.0" }
     databricks = { source = "databricks/databricks", version = "~> 1.60" }
   }
   backend "azurerm" {} # ver envs/<env>.backend.hcl
