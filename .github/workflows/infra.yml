@@ -1,0 +1,38 @@
+name: infra
+
+on:
+  pull_request:
+    paths: ["infra/terraform/**"]
+  push:
+    branches: [main]
+    paths: ["infra/terraform/**"]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        env: [dev, prod]
+    environment: ${{ github.event_name == 'push' && matrix.env || 'plan' }}
+    defaults:
+      run:
+        working-directory: infra/terraform
+    env:
+      ARM_USE_OIDC: "true"
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+      - run: terraform init -backend-config=envs/${{ matrix.env }}.backend.hcl
+      - run: terraform plan -var-file=envs/${{ matrix.env }}.tfvars -out=tfplan -input=false
+      - if: github.event_name == 'push'
+        run: terraform apply -input=false tfplan

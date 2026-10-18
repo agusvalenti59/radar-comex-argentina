@@ -1,0 +1,15 @@
+{
+  "name": "ds_landing_binary",
+  "properties": {
+    "linkedServiceName": {
+      "referenceName": "ls_adls_lake",
+      "type": "LinkedServiceReference",
+      "parameters": { "storageAccount": { "value": "@dataset().storageAccount", "type": "Expression" } }
+    },
+    "parameters": { "storageAccount": { "type": "string" }, "folder": { "type": "string" } },
+    "type": "Binary",
+    "typeProperties": {
+      "location": { "type": "AzureBlobFSLocation", "fileSystem": "landing", "folderPath": { "value": "@dataset().folder", "type": "Expression" } }
+    }
+  }
+}

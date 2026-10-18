@@ -1,0 +1,10 @@
+# Ejecución local con Spark + Parquet (sin Unity Catalog ni Delta)
+env: local
+storage_account: local
+catalog: null
+storage:
+  format: parquet
+  landing_root: data/sample
+  checkpoint_root: _local_lake/_checkpoints
+  warehouse_dir: _local_lake/warehouse
+reference_dir: data/reference

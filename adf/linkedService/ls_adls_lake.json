@@ -1,0 +1,8 @@
+{
+  "name": "ls_adls_lake",
+  "properties": {
+    "type": "AzureBlobFS",
+    "parameters": { "storageAccount": { "type": "string" } },
+    "typeProperties": { "url": "@{concat('https://', linkedService().storageAccount, '.dfs.core.windows.net')}" }
+  }
+}

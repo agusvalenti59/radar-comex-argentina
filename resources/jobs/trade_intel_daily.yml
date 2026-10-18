@@ -1,0 +1,53 @@
+# Fuentes de alta frecuencia: BCRA (diario) e INDEC (mensual, llega vía ADF a landing).
+# El file-arrival trigger arranca el job apenas ADF deja un archivo nuevo de INDEC.
+resources:
+  jobs:
+    trade_intel_daily:
+      name: trade-intel-daily-${var.env}
+      tags: {domain: trade-intelligence}
+      trigger:
+        file_arrival:
+          url: ${var.landing_url}/indec/exports/
+        pause_status: UNPAUSED
+      email_notifications:
+        on_failure: [ "${var.alert_email}" ]
+      job_clusters:
+        - job_cluster_key: small
+          new_cluster:
+            spark_version: ${var.spark_version}
+            node_type_id: ${var.node_type}
+            data_security_mode: SINGLE_USER
+            num_workers: 1
+            spark_env_vars:
+              TRADE_INTEL_ENV: ${var.env}
+              TRADE_INTEL_CONF_DIR: /Workspace${workspace.file_path}/conf
+      tasks:
+        - task_key: ingest_bcra
+          job_cluster_key: small
+          python_wheel_task: {package_name: trade_intel, entry_point: ti-ingest-bcra}
+          libraries: [{whl: ../../dist/*.whl}]
+          max_retries: 3
+        - task_key: bronze_bcra
+          depends_on: [{task_key: ingest_bcra}]
+          job_cluster_key: small
+          python_wheel_task: {package_name: trade_intel, entry_point: ti-bronze, parameters: ["--source", "bcra"]}
+          libraries: [{whl: ../../dist/*.whl}]
+        - task_key: bronze_indec
+          job_cluster_key: small
+          python_wheel_task: {package_name: trade_intel, entry_point: ti-bronze, parameters: ["--source", "indec_exports"]}
+          libraries: [{whl: ../../dist/*.whl}]
+        - task_key: silver
+          depends_on: [{task_key: bronze_bcra}, {task_key: bronze_indec}]
+          job_cluster_key: small
+          python_wheel_task: {package_name: trade_intel, entry_point: ti-silver}
+          libraries: [{whl: ../../dist/*.whl}]
+        - task_key: gold
+          depends_on: [{task_key: silver}]
+          job_cluster_key: small
+          python_wheel_task: {package_name: trade_intel, entry_point: ti-gold}
+          libraries: [{whl: ../../dist/*.whl}]
+        - task_key: freshness
+          depends_on: [{task_key: gold}]
+          job_cluster_key: small
+          python_wheel_task: {package_name: trade_intel, entry_point: ti-freshness}
+          libraries: [{whl: ../../dist/*.whl}]

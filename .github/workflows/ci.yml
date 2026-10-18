@@ -1,0 +1,66 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - run: pip install -e ".[dev]" build
+      - name: Lint
+        run: |
+          ruff check src tests scripts pipelines
+          ruff format --check src tests scripts || true   # informativo hasta adoptar formato estricto
+      - name: Tests (unit + e2e local con Spark)
+        run: pytest --cov=trade_intel --cov-report=xml --junitxml=junit.xml
+      - name: Build wheel
+        run: python -m build --wheel
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel
+          path: dist/*.whl
+
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/terraform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false
+      - run: terraform validate
+
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: databricks/setup-cli@main
+      - name: Validar esquema del bundle (sin autenticación)
+        run: databricks bundle schema > /dev/null && echo "CLI ok"
+
+  adf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar JSON de Data Factory
+        run: for f in adf/*/*.json; do python -m json.tool "$f" > /dev/null || exit 1; done

@@ -1,0 +1,32 @@
+m49,iso3,name_es,region,trade_bloc,indec_code
+0,WLD,Mundo,Mundo,,
+32,ARG,Argentina,América del Sur,MERCOSUR,
+76,BRA,Brasil,América del Sur,MERCOSUR,203
+600,PRY,Paraguay,América del Sur,MERCOSUR,221
+858,URY,Uruguay,América del Sur,MERCOSUR,225
+152,CHL,Chile,América del Sur,,208
+604,PER,Perú,América del Sur,,222
+218,ECU,Ecuador,América del Sur,,210
+484,MEX,México,América del Norte,T-MEC,218
+842,USA,Estados Unidos,América del Norte,T-MEC,212
+124,CAN,Canadá,América del Norte,T-MEC,204
+156,CHN,China,Asia,RCEP,310
+699,IND,India,Asia,,315
+392,JPN,Japón,Asia,RCEP,320
+410,KOR,Corea del Sur,Asia,RCEP,309
+704,VNM,Vietnam,Asia,RCEP,337
+360,IDN,Indonesia,Asia,RCEP,316
+784,ARE,Emiratos Árabes Unidos,Medio Oriente,CCG,341
+682,SAU,Arabia Saudita,Medio Oriente,CCG,302
+792,TUR,Turquía,Medio Oriente,,436
+818,EGY,Egipto,África,,113
+710,ZAF,Sudáfrica,África,,159
+276,DEU,Alemania,Europa,UE,438
+724,ESP,España,Europa,UE,410
+380,ITA,Italia,Europa,UE,417
+528,NLD,Países Bajos,Europa,UE,423
+251,FRA,Francia,Europa,UE,412
+620,PRT,Portugal,Europa,UE,427
+643,RUS,Rusia,Europa,UEEA,444
+36,AUS,Australia,Oceanía,RCEP,501
+554,NZL,Nueva Zelanda,Oceanía,RCEP,504

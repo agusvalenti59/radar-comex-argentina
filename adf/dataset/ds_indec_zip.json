@@ -1,0 +1,12 @@
+{
+  "name": "ds_indec_zip",
+  "properties": {
+    "linkedServiceName": { "referenceName": "ls_http_indec", "type": "LinkedServiceReference" },
+    "parameters": { "relativeUrl": { "type": "string" } },
+    "type": "Binary",
+    "typeProperties": {
+      "location": { "type": "HttpServerLocation", "relativeUrl": { "value": "@dataset().relativeUrl", "type": "Expression" } },
+      "compression": { "type": "ZipDeflate", "preserveZipFileNameAsFolder": false }
+    }
+  }
+}

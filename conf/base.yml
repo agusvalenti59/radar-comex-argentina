@@ -1,0 +1,73 @@
+# Configuración común a todos los entornos. Los entornos sobreescriben claves puntuales.
+project: trade-intel
+home_country_iso3: ARG
+
+storage:
+  format: delta            # local: parquet
+  landing_root: abfss://landing@{storage_account}.dfs.core.windows.net
+  checkpoint_root: abfss://checkpoints@{storage_account}.dfs.core.windows.net
+
+catalog: trade_{env}        # Unity Catalog: un catálogo por entorno
+reference_dir: /Volumes/trade_{env}/ops/reference   # seeds subidos por el CD
+schemas:
+  bronze: bronze
+  silver: silver
+  gold: gold
+  ops: ops                  # auditoría, cuarentena, métricas de calidad
+
+secrets:
+  scope: kv-trade-intel     # secret scope respaldado por Azure Key Vault
+  comtrade_key: comtrade-subscription-key
+
+sources:
+  comtrade:
+    base_url: https://comtradeapi.un.org/data/v1/get
+    type: C                 # commodities
+    classification: HS
+    max_records: 100000     # límite por request del plan gratuito/premium
+    requests_per_minute: 30
+    # Mercados objetivo (M49) como importadores + Argentina como exportador
+    reporters_m49: [32, 76, 156, 842, 276, 724, 380, 528, 152, 484, 699, 392, 410, 643, 784, 682, 704, 360, 818, 710]
+    years_back: 6
+  bcra:
+    base_url: https://api.bcra.gob.ar/estadisticascambiarias/v1.0
+    currencies: [USD, EUR, BRL, CNY]
+  indec:
+    # Bases de comercio exterior por NCM (mensual). Layout: ver docs/data-sources.md
+    base_url: https://comex.indec.gob.ar/files/zips
+    flows: [exports, imports]
+
+# Universo de productos del radar (HS6). Agroindustria + minería con foco exportador argentino.
+product_universe:
+  hs6:
+    - "020130"   # carne bovina deshuesada, fresca
+    - "020230"   # carne bovina deshuesada, congelada
+    - "030617"   # langostinos congelados
+    - "080550"   # limones y limas
+    - "100590"   # maíz
+    - "100199"   # trigo
+    - "120242"   # maní sin cáscara
+    - "120190"   # porotos de soja
+    - "150710"   # aceite de soja en bruto
+    - "230400"   # harina/pellets de soja
+    - "220421"   # vino en envases <= 2L
+    - "040221"   # leche en polvo entera
+    - "283691"   # carbonato de litio
+    - "090300"   # yerba mate
+    - "071333"   # porotos (alubias)
+
+gold:
+  cagr_years: 5
+  min_market_size_usd: 5000000
+  mirror_gap:
+    cif_fob_factor: 1.08    # ajuste esperado CIF/FOB
+    tolerance: 0.25         # |gap| > 25% después del ajuste => alerta
+  unit_value_outlier_z: 3.5 # robust z-score (MAD)
+  unit_value_min_ratio: 2.0 # y además >= 2x o <= 0.5x la mediana
+  opportunity_weights:
+    market_growth: 0.25
+    market_size: 0.20
+    rca: 0.20
+    headroom: 0.15          # 1 - share de ARG en el mercado
+    openness: 0.10          # 1 - HHI normalizado (mercado menos concentrado)
+    price_competitiveness: 0.10

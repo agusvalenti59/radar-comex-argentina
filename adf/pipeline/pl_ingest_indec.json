@@ -1,0 +1,57 @@
+{
+  "name": "pl_ingest_indec",
+  "properties": {
+    "description": "Descarga las bases mensuales de comercio exterior de INDEC (zip con CSV por NCM) y las descomprime en landing/indec/<flow>/. El job Databricks trade-intel-daily arranca por file-arrival trigger.",
+    "parameters": {
+      "storageAccount": { "type": "string", "defaultValue": "sttradeinteldev" },
+      "year": { "type": "int", "defaultValue": 2024 },
+      "files": {
+        "type": "array",
+        "defaultValue": [
+          { "flow": "exports", "relativeUrl": "/files/zips/exportaciones_2024_M.zip" },
+          { "flow": "imports", "relativeUrl": "/files/zips/importaciones_2024_M.zip" }
+        ]
+      }
+    },
+    "activities": [
+      {
+        "name": "ForEachFile",
+        "type": "ForEach",
+        "typeProperties": {
+          "items": { "value": "@pipeline().parameters.files", "type": "Expression" },
+          "isSequential": false,
+          "batchCount": 2,
+          "activities": [
+            {
+              "name": "CopyIndecZipToLanding",
+              "type": "Copy",
+              "policy": { "timeout": "0.01:00:00", "retry": 3, "retryIntervalInSeconds": 120 },
+              "typeProperties": {
+                "source": {
+                  "type": "BinarySource",
+                  "storeSettings": { "type": "HttpReadSettings", "requestMethod": "GET" },
+                  "formatSettings": { "type": "BinaryReadSettings", "compressionProperties": { "type": "ZipDeflateReadSettings", "preserveZipFileNameAsFolder": false } }
+                },
+                "sink": { "type": "BinarySink", "storeSettings": { "type": "AzureBlobFSWriteSettings", "copyBehavior": "PreserveHierarchy" } }
+              },
+              "inputs": [
+                { "referenceName": "ds_indec_zip", "type": "DatasetReference", "parameters": { "relativeUrl": "@item().relativeUrl" } }
+              ],
+              "outputs": [
+                {
+                  "referenceName": "ds_landing_binary",
+                  "type": "DatasetReference",
+                  "parameters": {
+                    "storageAccount": "@pipeline().parameters.storageAccount",
+                    "folder": "@concat('indec/', item().flow, '/year=', string(pipeline().parameters.year))"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "annotations": ["trade-intel", "landing"]
+  }
+}

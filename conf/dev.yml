@@ -1,0 +1,5 @@
+env: dev
+storage_account: sttradeinteldev
+sources:
+  comtrade:
+    years_back: 3

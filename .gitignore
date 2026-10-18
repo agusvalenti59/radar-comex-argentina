@@ -1,0 +1,24 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+.databricks/
+spark-warehouse/
+metastore_db/
+derby.log
+_local_lake/
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+*.tfvars.secret
+.env
+
+# muestra sintética regenerable
+data/sample/*
+!data/sample/README.md

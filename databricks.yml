@@ -1,0 +1,62 @@
+# Databricks Asset Bundle: define jobs, pipelines y artefactos como código.
+# Deploy: databricks bundle deploy -t dev | prod
+bundle:
+  name: trade-intel
+
+include:
+  - resources/jobs/*.yml
+  - resources/pipelines/*.yml
+
+artifacts:
+  trade_intel_wheel:
+    type: whl
+    build: python -m build --wheel
+    path: .
+
+sync:
+  include:
+    - conf/*.yml
+    - data/reference/*.csv
+    - pipelines/*.py
+
+variables:
+  env:
+    description: Entorno lógico (selecciona conf/<env>.yml)
+  catalog:
+    description: Catálogo de Unity Catalog
+  node_type:
+    default: Standard_D4ds_v5
+  spark_version:
+    default: 17.3.x-scala2.13   # DBR LTS con Spark 4.0 (mismo major que los tests locales)
+  alert_email:
+    default: data-alerts@example.com
+  landing_url:
+    description: URL abfss de la external location landing
+
+targets:
+  dev:
+    mode: development          # prefija recursos con [dev usuario] y pausa schedules
+    default: true
+    workspace:
+      host: https://adb-0000000000000000.0.azuredatabricks.net
+    variables:
+      env: dev
+      catalog: trade_dev
+      landing_url: abfss://landing@sttradeinteldev.dfs.core.windows.net
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-1111111111111111.1.azuredatabricks.net
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    run_as:
+      service_principal_name: 00000000-0000-0000-0000-000000000000   # SP de despliegue
+    variables:
+      env: prod
+      catalog: trade_prod
+      landing_url: abfss://landing@sttradeintelprd.dfs.core.windows.net
+    permissions:
+      - group_name: data-engineers
+        level: CAN_MANAGE
+      - group_name: trade-analysts
+        level: CAN_VIEW

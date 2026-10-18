@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trade-intel"
+version = "0.1.0"
+description = "Trade Intelligence Lakehouse: export-opportunity radar for Argentina on Azure Databricks"
+requires-python = ">=3.10"
+dependencies = [
+  "pyyaml>=6.0",
+  "requests>=2.31",
+  "tenacity>=8.2",
+]
+
+[project.scripts]
+ti-ingest-comtrade = "trade_intel.jobs.ingest_comtrade:main"
+ti-ingest-bcra = "trade_intel.jobs.ingest_bcra:main"
+ti-bronze = "trade_intel.jobs.bronze_ingest:main"
+ti-silver = "trade_intel.jobs.silver_build:main"
+ti-gold = "trade_intel.jobs.gold_build:main"
+ti-freshness = "trade_intel.jobs.freshness:main"
+
+[project.optional-dependencies]
+dev = [
+  "pyspark==4.0.1",
+  "chispa>=0.10",
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.6",
+  "responses>=0.25",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+trade_intel = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["spark: tests that need a local SparkSession"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "SIM"]
+ignore = ["E501", "N812"]

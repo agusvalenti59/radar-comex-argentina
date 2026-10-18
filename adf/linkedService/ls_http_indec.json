@@ -1,0 +1,11 @@
+{
+  "name": "ls_http_indec",
+  "properties": {
+    "type": "HttpServer",
+    "typeProperties": {
+      "url": "https://comex.indec.gob.ar",
+      "enableServerCertificateValidation": true,
+      "authenticationType": "Anonymous"
+    }
+  }
+}

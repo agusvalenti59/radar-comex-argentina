@@ -1,0 +1,17 @@
+# Variante declarativa (Lakeflow Declarative Pipelines / DLT) de bronze+silver para Comtrade.
+# Reutiliza las mismas reglas de calidad y transformaciones del paquete. Ver ADR 0003.
+resources:
+  pipelines:
+    trade_intel_dlt_silver:
+      name: trade-intel-dlt-silver-${var.env}
+      catalog: ${var.catalog}
+      schema: silver_dlt
+      serverless: true
+      channel: CURRENT
+      continuous: false
+      libraries:
+        - file: {path: ../../pipelines/dlt_silver.py}
+        - whl: ../../dist/*.whl
+      configuration:
+        trade_intel.landing_root: ${var.landing_url}
+        trade_intel.reference_dir: /Workspace${workspace.file_path}/data/reference

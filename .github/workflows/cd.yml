@@ -1,0 +1,57 @@
+name: cd
+
+# main -> dev automático. Tag v* -> prod con aprobación manual (GitHub Environment "prod").
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # OIDC federado con Entra ID: sin secretos de larga vida
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ startsWith(github.ref, 'refs/tags/v') && 'prod' || 'dev' }}
+    env:
+      TARGET: ${{ startsWith(github.ref, 'refs/tags/v') && 'prod' || 'dev' }}
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_AUTH_TYPE: azure-cli
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - uses: databricks/setup-cli@main
+      - name: Validar bundle
+        run: databricks bundle validate -t "$TARGET"
+      - name: Deploy jobs + pipelines + wheel
+        run: databricks bundle deploy -t "$TARGET"
+      - name: Subir seeds de referencia al Volume de UC
+        run: |
+          databricks fs cp --overwrite data/reference/countries.csv "dbfs:/Volumes/trade_${TARGET}/ops/reference/countries.csv"
+          databricks fs cp --overwrite data/reference/products.csv "dbfs:/Volumes/trade_${TARGET}/ops/reference/products.csv"
+      - name: Publicar pipelines de Data Factory
+        run: |
+          RG="rg-tradeintel-${TARGET}"; ADF="adf-tradeintel-${TARGET}"
+          az extension add --name datafactory --only-show-errors
+          for f in adf/linkedService/*.json adf/dataset/*.json adf/pipeline/*.json adf/trigger/*.json; do
+            kind=$(basename "$(dirname "$f")"); name=$(basename "$f" .json)
+            case $kind in
+              linkedService) az datafactory linked-service create -g "$RG" --factory-name "$ADF" -n "$name" --properties "@$f" ;;
+              dataset)       az datafactory dataset create        -g "$RG" --factory-name "$ADF" -n "$name" --properties "@$f" ;;
+              pipeline)      az datafactory pipeline create       -g "$RG" --factory-name "$ADF" -n "$name" --pipeline "@$f" ;;
+              trigger)       az datafactory trigger create        -g "$RG" --factory-name "$ADF" -n "$name" --properties "@$f" ;;
+            esac
+          done
+      - name: Smoke test (sólo dev)
+        if: env.TARGET == 'dev'
+        run: databricks bundle run -t dev trade_intel_daily --no-wait
