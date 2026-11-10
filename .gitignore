@@ -22,3 +22,4 @@ _local_lake/
 # muestra sintética regenerable
 data/sample/*
 !data/sample/README.md
+data/public_sample/

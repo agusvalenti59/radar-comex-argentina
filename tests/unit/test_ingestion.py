@@ -47,3 +47,56 @@ def test_bcra_fetch():
         "USD", date(2024, 1, 1), date(2024, 1, 31)
     )
     assert env["results"][0]["fecha"] == "2024-01-02"
+
+
+def test_plan_split_by_product_for_public_api():
+    reqs = list(plan_requests([32], [2023], ["080550", "120242"], split_by_product=True))
+    # 2 flujos x 2 productos + 1 total
+    assert len(reqs) == 5
+    assert all(len(r.hs_codes) == 1 for r in reqs)
+    keys = {r.landing_key for r in reqs}
+    assert len(keys) == 5  # un archivo por pedido, sin pisarse
+    assert "comtrade/freq=A/year=2023/reporter=32/flow=X/part-080550.json" in keys
+
+
+@responses.activate
+def test_public_mode_without_key():
+    responses.get(
+        "https://comtradeapi.un.org/public/v1/preview/C/A/HS",
+        json={"count": 1, "data": [{"cmdCode": "080550"}], "error": ""},
+    )
+    client = ComtradeClient("https://comtradeapi.un.org/data/v1/get", None, requests_per_minute=6000)
+    assert client.mode == "public" and client.split_by_product and client.max_records == 500
+    env = client.fetch(ComtradeRequest(32, 2023, "X", hs_codes=("080550",)))
+    call = responses.calls[0].request
+    assert "Ocp-Apim-Subscription-Key" not in call.headers
+    assert "maxRecords=500" in call.url
+    assert env["_api_mode"] == "public" and env["_truncated"] is False
+
+
+@responses.activate
+def test_api_error_field_raises():
+    import pytest
+
+    responses.get("https://comtradeapi.un.org/public/v1/preview/C/A/HS", json={"data": None, "error": "bad period"})
+    client = ComtradeClient("x", None, requests_per_minute=6000)
+    with pytest.raises(RuntimeError, match="bad period"):
+        client.fetch(ComtradeRequest(32, 1800, "X"))
+
+
+def test_resolve_key_modes():
+    import pytest
+
+    from trade_intel.jobs.ingest_comtrade import resolve_key
+
+    def missing():
+        raise KeyError("no secret")
+
+    assert resolve_key("public", lambda: "abc") is None
+    assert resolve_key("auto", lambda: "abc") == "abc"
+    assert resolve_key("auto", lambda: "CHANGE_ME") is None
+    assert resolve_key("auto", missing) is None
+    with pytest.raises(RuntimeError):
+        resolve_key("keyed", lambda: "CHANGE_ME")
+    with pytest.raises(KeyError):
+        resolve_key("keyed", missing)

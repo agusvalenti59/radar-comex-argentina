@@ -6,6 +6,7 @@ alertas espejo/precio, que es lo que vería un analista en el dashboard.
 
 from __future__ import annotations
 
+import argparse
 import os
 import shutil
 import sys
@@ -27,9 +28,18 @@ from trade_intel.jobs import silver_build  # noqa: E402
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--landing", default=None,
+                    help="carpeta landing alternativa (ej. data/public_sample bajada con fetch_comtrade_public.py)")
+    args = ap.parse_args()
     settings = load_settings("local")
+    if args.landing:
+        from trade_intel.config import Settings
+
+        raw = {**settings.raw, "storage": {**settings.raw["storage"], "landing_root": args.landing}}
+        settings = Settings(env="local", raw=raw)
     shutil.rmtree(ROOT / "_local_lake", ignore_errors=True)
-    if not (ROOT / "data/sample/comtrade").exists():
+    if not args.landing and not (ROOT / "data/sample/comtrade").exists():
         import subprocess
 
         subprocess.run([sys.executable, "scripts/generate_sample_data.py"], check=True)
@@ -39,7 +49,10 @@ def main() -> None:
     io = TableIO(spark, settings)
     io.ensure_schemas()
 
-    for src in SOURCES:
+    for src, spec in SOURCES.items():
+        if not (Path(settings.landing_root) / spec.subdir).exists():
+            print(f"(sin datos de {src} en {settings.landing_root}, se omite)")
+            continue
         with audited(io, f"bronze_{src}") as st:
             st["rows_out"] = ingest(spark, settings, io, src)
     with audited(io, "silver_build") as st:

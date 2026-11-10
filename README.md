@@ -61,7 +61,7 @@ Detalle completo, decisiones y trade-offs: [docs/architecture.md](docs/architect
 |------|-----------|
 | Infraestructura | Terraform (azurerm + databricks provider), backend remoto en Azure Storage |
 | Almacenamiento | ADLS Gen2 (HNS), Delta Lake, Unity Catalog (catálogo por entorno) |
-| Ingesta | Azure Data Factory (archivos INDEC), jobs Python (APIs Comtrade/BCRA), Auto Loader |
+| Ingesta | Azure Data Factory (archivos INDEC), jobs Python (APIs Comtrade con clave o pública, BCRA), Auto Loader |
 | Transformación | PySpark empaquetado como wheel, Lakeflow Declarative Pipelines (DLT) como variante |
 | Orquestación | Databricks Workflows (Asset Bundles), file-arrival trigger, ADF schedule trigger |
 | Calidad | Reglas declarativas compartidas Jobs/DLT, cuarentena, métricas DQ, control de frescura |
@@ -103,8 +103,12 @@ Requisitos: Python 3.10+, Java 17 o 21.
 ```bash
 python -m venv .venv && source .venv/bin/activate
 make install          # pip install -e ".[dev]"
-make test             # 31 tests: métricas, silver, calidad, ingesta y pipeline e2e
+make test             # 35 tests: métricas, silver, calidad, ingesta y pipeline e2e
 make demo             # landing → bronze → silver → gold sobre data/sample e imprime resultados
+
+# Con datos REALES de Comtrade, sin clave (API pública, máx. 500 registros por pedido)
+python scripts/fetch_comtrade_public.py --year 2023
+python scripts/run_local_demo.py --landing data/public_sample
 ```
 
 `make demo` imprime el top de oportunidades, las alertas espejo y los outliers de precio. La muestra es **sintética** (generada por `scripts/generate_sample_data.py`) y tiene casos plantados para validar que el pipeline los detecte: subdeclaración ARG→Países Bajos en limones, un precio de vino 12× la mediana en China y filas inválidas que deben ir a cuarentena.

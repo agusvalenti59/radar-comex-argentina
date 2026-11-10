@@ -21,11 +21,16 @@ secrets:
 
 sources:
   comtrade:
+    # api_mode: auto = usa la API con clave si el secreto existe; si no, la pública.
+    #           keyed = exige clave | public = API pública sin clave (tope 500 filas/pedido)
+    api_mode: auto
     base_url: https://comtradeapi.un.org/data/v1/get
+    public_base_url: https://comtradeapi.un.org/public/v1/preview
     type: C                 # commodities
     classification: HS
-    max_records: 100000     # límite por request del plan gratuito/premium
+    max_records: 100000     # límite por request del plan con clave
     requests_per_minute: 30
+    public_requests_per_minute: 12   # la pública no publica su límite: ir despacio
     # Mercados objetivo (M49) como importadores + Argentina como exportador
     reporters_m49: [32, 76, 156, 842, 276, 724, 380, 528, 152, 484, 699, 392, 410, 643, 784, 682, 704, 360, 818, 710]
     years_back: 6
