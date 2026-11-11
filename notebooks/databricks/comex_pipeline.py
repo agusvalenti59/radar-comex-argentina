@@ -37,6 +37,12 @@ with zipfile.ZipFile(ZIP_PATH) as z:
             shutil.copyfileobj(src, out)
         n += 1
 print(f"{n} archivos extraídos en {PROJECT}")
+
+# Sumar las descargas nuevas que dejó el notebook comex_actualizar (si las hay)
+EXTRA = f"{VOLUME}/landing_extra"
+if os.path.exists(f"{EXTRA}/comtrade"):
+    shutil.copytree(EXTRA, f"{PROJECT}/data/full_sample", dirs_exist_ok=True)
+    print("Se sumaron las descargas nuevas de", EXTRA)
 print("Carpetas:", sorted(os.listdir(PROJECT)))
 
 # COMMAND ----------

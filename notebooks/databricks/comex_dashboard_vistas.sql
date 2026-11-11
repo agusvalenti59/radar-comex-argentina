@@ -36,7 +36,8 @@ FROM workspace.comex_gold.fact_export_opportunity o
 JOIN ultimo u ON o.year = u.y
 LEFT JOIN workspace.comex_gold.dim_country c  ON c.iso3 = o.market_iso3
 LEFT JOIN workspace.comex_gold.dim_country ct ON ct.iso3 = o.top_supplier_iso3
-LEFT JOIN workspace.comex_gold.dim_product p  ON p.hs6 = o.hs6;
+LEFT JOIN workspace.comex_gold.dim_product p  ON p.hs6 = o.hs6
+ORDER BY score DESC;
 
 -- COMMAND ----------
 
@@ -60,7 +61,8 @@ JOIN ultimo u ON g.year = u.y
 LEFT JOIN workspace.comex_gold.dim_country c ON c.iso3 = g.partner_iso3
 LEFT JOIN workspace.comex_gold.dim_product p ON p.hs6 = g.hs6
 WHERE g.mirror_status = 'discrepancia'
-  AND abs(g.gap_usd) >= 1000000;
+  AND abs(g.gap_usd) >= 1000000
+ORDER BY abs(g.gap_usd) DESC;
 
 -- COMMAND ----------
 
@@ -88,7 +90,8 @@ LEFT JOIN workspace.comex_gold.dim_country cs ON cs.iso3 = v.supplier_iso3
 LEFT JOIN workspace.comex_gold.dim_product p  ON p.hs6 = v.hs6
 WHERE v.is_price_outlier
   AND v.net_weight_kg >= 20000
-  AND v.value_usd >= 250000;
+  AND v.value_usd >= 250000
+ORDER BY abs(v.premium_vs_median) DESC;
 
 -- COMMAND ----------
 

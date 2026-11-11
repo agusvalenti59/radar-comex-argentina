@@ -159,3 +159,8 @@ if descargados:
     print("Pipeline terminado. El dashboard ya muestra los datos nuevos.")
 else:
     print("Sin novedades en Comtrade. No se corre el pipeline.")
+
+# COMMAND ----------
+
+# 7) Si alguna descarga falló, la corrida termina en error (así llega el mail de aviso)
+assert len(descargados) == len(nuevos), len(nuevos) - len(descargados)
