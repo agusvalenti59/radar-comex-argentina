@@ -1,4 +1,4 @@
-# Trade Intelligence Platform · Radar de oportunidades de exportación 🇦🇷
+# Radar COMEX Argentina · Oportunidades de exportación con datos 🇦🇷
 
 Plataforma de datos end-to-end sobre **Azure + Databricks** que responde preguntas reales de inteligencia comercial para exportadores argentinos, usando datos públicos oficiales (UN Comtrade, INDEC, BCRA).
 

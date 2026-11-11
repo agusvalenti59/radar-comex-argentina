@@ -148,7 +148,7 @@ En **Databricks Free Edition** el pipeline corre en la nube, se actualiza solo c
 
 ## Paso 6: publicarlo en GitHub
 
-El proyecto está público en [github.com/agusvalenti59/trade-intelligence-platform](https://github.com/agusvalenti59/trade-intelligence-platform), subido en 4 partes, cada una con su rama y su Pull Request.
+El proyecto está público en [github.com/agusvalenti59/radar-comex-argentina](https://github.com/agusvalenti59/radar-comex-argentina), subido en 5 partes, cada una con su rama y su Pull Request.
 
 | Parte | Rama | Qué subió | Cómo |
 | --- | --- | --- | --- |
@@ -156,6 +156,7 @@ El proyecto está público en [github.com/agusvalenti59/trade-intelligence-platf
 | 2 | `parte-2-docker-local` | Script de Docker, descarga con clave y `.gitignore` | PR + Merge |
 | 3 | `parte-3-databricks` | Los 5 notebooks de Databricks | PR + Squash and merge |
 | 4 | `parte-4-readme` | README nuevo con resultados y capturas del dashboard | PR + Merge |
+| 5 | `parte-5-guia` | Esta guía | PR + Merge |
 
 **Los conceptos de git que aprendí, en una línea cada uno**
 
