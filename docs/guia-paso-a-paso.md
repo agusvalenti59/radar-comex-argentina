@@ -28,7 +28,7 @@ Conviene seguirla en orden. Las etapas 1 y 2 no cuestan plata y no necesitan Azu
 |--------|----------|------------------|
 | **Azure** con una suscripción propia | Toda la infraestructura | [azure.microsoft.com/free](https://azure.microsoft.com/free). La cuenta gratuita trae crédito por 30 días. Si usás una suscripción de tu organización, necesitás rol **Owner** (o Contributor + User Access Administrator) sobre ella. |
 | **GitHub** | Repositorio y CI/CD | [github.com](https://github.com) |
-| **UN Comtrade** (API key gratuita) | Datos bilaterales de comercio | Registrate en [comtradedeveloper.un.org](https://comtradedeveloper.un.org), entrá a *Products*, suscribite a **comtrade - v1** (plan free) y copiá la *Primary key* desde tu perfil. |
+| **UN Comtrade** (API key gratuita, opcional al principio) | Datos bilaterales de comercio | Para empezar no hace falta: la **API pública** (`https://comtradeapi.un.org/public/v1`) no pide clave y alcanza para probar. Para la carga completa, registrate en [comtradedeveloper.un.org](https://comtradedeveloper.un.org), entrá a *Products*, suscribite a **comtrade - v1** (plan free) y copiá la *Primary key* desde tu perfil. |
 | **Power BI Desktop** | Tablero | Gratis, se descarga desde Microsoft Store (sólo Windows). |
 
 BCRA e INDEC no piden registro.
@@ -71,12 +71,12 @@ unzip trade-intelligence-platform.zip && cd trade-intelligence-platform
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]" build
-pytest                     # tienen que pasar 31 tests
+pytest                     # tienen que pasar 35 tests
 python scripts/run_local_demo.py
 ```
 
 **Verificación:**
-- `pytest` termina con `31 passed`.
+- `pytest` termina con `35 passed`.
 - La demo imprime una tabla *Top 10 oportunidades*, una alerta espejo para `NLD 080550` (limones a Países Bajos) y un outlier de precio para `CHN 220421 FRA` (vino).
 
 **Para entender el código**, leé en este orden:
@@ -87,15 +87,35 @@ python scripts/run_local_demo.py
 
 **En qué te ayudo:** si falla un test o la demo, pegame la salida. Si no se entiende alguna parte del código, preguntame por el archivo.
 
+### 1.1 Probar con datos reales de Comtrade, sin clave
+
+La demo anterior usa datos sintéticos. Para ver el pipeline con datos oficiales, sin registrarte en ningún lado, usá la API pública de Comtrade:
+
+```bash
+python scripts/fetch_comtrade_public.py --year 2023
+python scripts/run_local_demo.py --landing data/public_sample
+```
+
+El primer comando baja Argentina más 5 mercados (España, Países Bajos, EE.UU., China, Alemania) para limones, maní y vino: son 42 pedidos y tarda unos 4 minutos, porque va despacio a propósito. El segundo corre bronze, silver y gold sobre esos datos.
+
+Podés cambiar el alcance con `--reporters` (códigos M49), `--hs` (códigos HS6) y `--year` (acepta varios años).
+
+**Límites de la API pública:**
+- Devuelve como máximo **500 registros por pedido**. Por eso el script pide un producto por vez: así cada respuesta trae una fila por país socio, bastante menos de 500. Si alguna respuesta llega justo a 500, el script lo avisa, porque significa que faltan datos.
+- No publica un límite de pedidos por minuto. El script hace 12 por minuto. Si empieza a dar errores 429, bajalo con `--rpm 6`.
+- Con un solo año no hay CAGR (necesita 5) y con pocos países el RCA es aproximado. Para el radar completo conviene la clave gratuita (etapa 4.1).
+
+**Verificación:** el script termina con `Listo: N filas` y `truncados: 0`, y la demo muestra la tabla de oportunidades con nombres reales de mercados.
+
 ---
 
 ## Etapa 2. Subir el repo a GitHub
 
-1. En GitHub, creá un repositorio **vacío** (sin README ni .gitignore), por ejemplo `trade-intelligence-platform`.
+1. En GitHub, creá un repositorio **vacío** (sin README ni .gitignore), por ejemplo `radar-comex-argentina`.
 2. Desde la carpeta del proyecto (el zip ya trae el historial de git):
 
 ```bash
-git remote add origin https://github.com/<tu-usuario>/trade-intelligence-platform.git
+git remote add origin https://github.com/<tu-usuario>/radar-comex-argentina.git
 git push -u origin main
 ```
 
@@ -185,6 +205,8 @@ terraform output
 
 ### 4.1 Cargar la API key de Comtrade en Key Vault
 
+Este paso es opcional para empezar. El job de Comtrade tiene `api_mode: auto` en `conf/base.yml`: si en Key Vault sigue el valor de ejemplo (`CHANGE_ME`), usa la API pública sin clave y pide un producto por vez. Funciona, pero hace muchos más pedidos y va más lento, así que para la carga completa conviene cargar la clave:
+
 ```bash
 KV=$(terraform output -raw key_vault_uri | sed 's#https://##; s#\.vault.*##')
 az keyvault secret set --vault-name "$KV" --name comtrade-subscription-key --value "<tu primary key de Comtrade>"
@@ -232,7 +254,12 @@ databricks bundle deploy   -t dev
 
 ### 5.1 Empezar chico
 
-La primera vez conviene bajar un solo año para ver que todo funciona. Comtrade gratis permite unas 500 llamadas por día. Un año son unas 60 llamadas y la historia completa (6 años, lo necesario para el CAGR de 5 años) unas 360, así que no conviene repetir la carga completa el mismo día.
+La primera vez conviene bajar un solo año para ver que todo funciona.
+
+- **Con clave:** el plan gratuito permite unas 500 llamadas por día. Un año son unas 60 llamadas y la historia completa (6 años, lo necesario para el CAGR de 5 años) unas 360, así que no conviene repetir la carga completa el mismo día.
+- **Sin clave (API pública):** un año son unas 620 llamadas, porque se pide un producto por vez, y a 12 por minuto tarda cerca de una hora. Para probar alcanza. Para la historia completa, cargá la clave.
+
+Para forzar un modo, agregá `--api-mode,public` o `--api-mode,keyed` a los parámetros. Con `keyed`, el job falla si no encuentra la clave en vez de pasar a la pública.
 
 ```bash
 databricks bundle run -t dev trade_intel_annual --python-params="--year,2023"
@@ -367,7 +394,7 @@ for ENV in dev prod plan; do
 az ad app federated-credential create --id $APP_ID --parameters "{
   \"name\": \"gh-$ENV\",
   \"issuer\": \"https://token.actions.githubusercontent.com\",
-  \"subject\": \"repo:<tu-usuario>/trade-intelligence-platform:environment:$ENV\",
+  \"subject\": \"repo:<tu-usuario>/radar-comex-argentina:environment:$ENV\",
   \"audiences\": [\"api://AzureADTokenExchange\"]
 }"
 done
@@ -442,7 +469,7 @@ Hacé un cambio chico (por ejemplo agregar un producto a `conf/base.yml` y `data
 ## Checklist resumida
 
 - [ ] Etapa 0: cuentas de Azure, GitHub y Comtrade; herramientas instaladas
-- [ ] Etapa 1: `pytest` con 31 tests en verde y la demo local funcionando
+- [ ] Etapa 1: `pytest` con 35 tests en verde, la demo local funcionando y una muestra real bajada con la API pública
 - [ ] Etapa 2: repo en GitHub y CI en verde
 - [ ] Etapa 3: `terraform apply` en dev y catálogo `trade_dev` visible
 - [ ] Etapa 4: key de Comtrade en Key Vault, grupos creados, `bundle deploy` hecho
