@@ -23,3 +23,7 @@ _local_lake/
 data/sample/*
 !data/sample/README.md
 data/public_sample/
+data/full_sample/
+comex.zip
+prueba.txt
+salida.txt
