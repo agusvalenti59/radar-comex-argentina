@@ -4,6 +4,19 @@ Plataforma de datos end-to-end sobre **Azure + Databricks** que responde pregunt
 
 > No es un "pipeline de ventas de ejemplo". Cada tabla gold responde una pregunta que hoy un analista de una cámara sectorial, una agencia de promoción (tipo AAICI) o el área comercial de una exportadora resuelve a mano con planillas.
 
+## Estado actual: corriendo en producción liviana
+
+El pipeline completo corre hoy en **Databricks Free Edition** (serverless + Unity Catalog), con datos **reales** de UN Comtrade, y se actualiza solo.
+
+- **Job semanal** (lunes 9:00, Buenos Aires): consulta la disponibilidad de datos en Comtrade, baja solo lo nuevo o revisado y re-corre bronze → silver → gold. Si algo falla, avisa por mail.
+- **Dashboard AI/BI "Radar COMEX Argentina"**: oportunidades de exportación, alertas de estadística espejo y precios atípicos, siempre sobre el último año disponible.
+- **Resultados con datos 2025**: 65 combinaciones producto-mercado en el cuadrante de oportunidad, 3 con score ≥ 70, 44 alertas espejo (diferencias ≥ USD 1M entre lo que declara Argentina y lo que declara el socio) y 42 precios atípicos.
+
+![Dashboard: resumen y oportunidades](docs/img/dashboard-resumen.png)
+![Dashboard: alertas espejo y precios atípicos](docs/img/dashboard-alertas.png)
+
+Los notebooks están en [notebooks/databricks/](notebooks/databricks/). La arquitectura Azure (Terraform, ADF, Key Vault) de más abajo es el diseño objetivo para un entorno corporativo; el código de transformación es el mismo.
+
 ## Preguntas de negocio que responde
 
 | # | Pregunta | Tabla gold | Técnica |
@@ -82,6 +95,7 @@ Detalle completo, decisiones y trade-offs: [docs/architecture.md](docs/architect
 │   ├── quality/              # Reglas de calidad y cuarentena
 │   ├── common/               # Spark, TableIO (MERGE idempotente), auditoría, logging
 │   └── jobs/                 # Entry points de cada tarea del Workflow
+├── notebooks/databricks/     # Versión Databricks Free Edition: pipeline, vistas del dashboard, job semanal
 ├── pipelines/dlt_silver.py   # Variante declarativa (DLT) reutilizando las mismas reglas
 ├── resources/                # Jobs y pipelines del Databricks Asset Bundle
 ├── databricks.yml            # Bundle: targets dev / prod
@@ -91,7 +105,7 @@ Detalle completo, decisiones y trade-offs: [docs/architecture.md](docs/architect
 ├── powerbi/                  # Modelo, páginas y medidas DAX
 ├── data/reference/           # Seeds: países (M49/ISO3/INDEC) y productos HS6
 ├── data/sample/              # Datos SINTÉTICOS con el layout real de cada fuente
-├── scripts/                  # Generador de muestra, demo local, mantenimiento Delta
+├── scripts/                  # Generador de muestra, demo local, corrida completa en Docker, mantenimiento Delta
 ├── tests/                    # pytest + chispa (unitarios y e2e con Spark local)
 └── docs/                     # Arquitectura, roadmap, fuentes, modelo, métricas, runbook, ADRs
 ```
@@ -112,6 +126,23 @@ python scripts/run_local_demo.py --landing data/public_sample
 ```
 
 `make demo` imprime el top de oportunidades, las alertas espejo y los outliers de precio. La muestra es **sintética** (generada por `scripts/generate_sample_data.py`) y tiene casos plantados para validar que el pipeline los detecte: subdeclaración ARG→Países Bajos en limones, un precio de vino 12× la mediana en China y filas inválidas que deben ir a cuarentena.
+
+### En Windows con Docker (corrida completa con datos reales)
+
+Spark no corre bien en Windows nativo, así que el pipeline completo se ejecuta dentro de un contenedor. La clave de Comtrade se lee de una variable de entorno y nunca queda en el repo.
+
+```powershell
+$env:COMTRADE_API_KEY = Read-Host Clave
+docker run --rm -e COMTRADE_API_KEY -v ${PWD}:/work -w /work python:3.12-bookworm python scripts/docker_full_radar.py
+```
+
+## Correrlo en Databricks Free Edition
+
+1. Subir un zip con `src/`, `conf/` y `data/reference/` a un volumen (`/Volumes/workspace/comex/archivos/comex.zip`).
+2. Importar los notebooks de [notebooks/databricks/](notebooks/databricks/).
+3. Correr `comex_guardar_clave` una vez para guardar la clave de Comtrade como secreto.
+4. Correr `comex_pipeline` y después `comex_dashboard_vistas.sql`.
+5. Programar `comex_actualizar` como job semanal y armar el dashboard sobre las vistas `comex_dash.v_*`.
 
 ## Despliegue en Azure
 
