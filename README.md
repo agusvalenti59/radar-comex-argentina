@@ -2,7 +2,7 @@
 
 Plataforma de datos end-to-end sobre **Azure + Databricks** que responde preguntas reales de inteligencia comercial para exportadores argentinos, usando datos públicos oficiales (UN Comtrade, INDEC, BCRA).
 
-> © 2026 Agustin Boursiac. Todos los derechos reservados. El código, la metodología y la documentación no se pueden copiar ni reutilizar sin permiso escrito. Ver [LICENSE](LICENSE).
+> © 2026 Agustin Valenti Boursiac. Todos los derechos reservados. El código, la metodología y la documentación no se pueden copiar ni reutilizar sin permiso escrito. Ver [LICENSE](LICENSE).
 
 > No es un "pipeline de ventas de ejemplo". Cada tabla gold responde una pregunta que hoy un analista de una cámara sectorial, una agencia de promoción (tipo AAICI) o el área comercial de una exportadora resuelve a mano con planillas.
 
@@ -169,7 +169,7 @@ Paso a paso detallado: [docs/guia-paso-a-paso.md](docs/guia-paso-a-paso.md). Ope
 
 ## Derechos de autor y datos
 
-© 2026 Agustin Boursiac. **Todos los derechos reservados.**
+© 2026 Agustin Valenti Boursiac. **Todos los derechos reservados.**
 
 Este repositorio es público para que se pueda **ver** como portfolio. El código, los notebooks, las consultas SQL, la metodología de métricas (score de oportunidad, alertas espejo, precios atípicos), el diseño del dashboard y la documentación son obra del autor. **No se permite copiarlos, modificarlos, redistribuirlos ni usarlos con fines comerciales sin permiso escrito.** Las condiciones completas están en [LICENSE](LICENSE).
 
