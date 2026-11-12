@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Valenti Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Silver -> Gold: modelo dimensional para consumo (Power BI / Databricks SQL)."""
 
 from __future__ import annotations

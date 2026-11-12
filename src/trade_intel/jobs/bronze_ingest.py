@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Valenti Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Tarea: landing -> bronze para una fuente (Auto Loader availableNow)."""
 
 from trade_intel.bronze.ingest import SOURCES, ingest

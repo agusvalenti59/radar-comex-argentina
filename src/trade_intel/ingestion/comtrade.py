@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Valenti Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Cliente de UN Comtrade (https://comtradeapi.un.org).
 
 Dos modos con el mismo contrato de salida (el envelope que va a landing es idéntico):

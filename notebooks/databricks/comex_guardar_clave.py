@@ -1,4 +1,6 @@
 # Databricks notebook source
+# Copyright (c) 2026 Agustin Valenti Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 # MAGIC %md
 # MAGIC # Guardar la clave de UN Comtrade (una sola vez)
 # MAGIC 1. Corré la celda 1: aparece arriba un cuadro **clave_comtrade**.

@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Valenti Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Carga de configuración por entorno (conf/base.yml + conf/<env>.yml)."""
 
 from __future__ import annotations

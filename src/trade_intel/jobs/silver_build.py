@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Valenti Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Tarea: bronze -> silver (referencias, flujos unificados, FX) con calidad y cuarentena."""
 
 from __future__ import annotations

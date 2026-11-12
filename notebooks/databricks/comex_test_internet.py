@@ -1,4 +1,6 @@
 # Databricks notebook source
+# Copyright (c) 2026 Agustin Valenti Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 # MAGIC %md
 # MAGIC # Prueba: ¿Databricks llega a la API de UN Comtrade?
 # MAGIC No usa la clave. Solo consulta la API pública de disponibilidad de datos. **Run all**.

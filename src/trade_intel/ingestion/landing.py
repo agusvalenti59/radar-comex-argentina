@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Valenti Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Escritura en la zona landing (ADLS Gen2 en la nube, filesystem en local).
 
 En Databricks se escribe vía `dbutils.fs.put` sobre un Volume / external location de UC,
