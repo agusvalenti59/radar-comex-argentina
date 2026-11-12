@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Auditoría de corridas: una fila por tarea en ops.pipeline_runs (lineage operativo + SLAs)."""
 
 from __future__ import annotations

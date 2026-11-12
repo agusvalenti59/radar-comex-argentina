@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Reglas de calidad declarativas.
 
 Cada regla es una expresión SQL que debe ser verdadera. La misma definición se usa en:

@@ -1,4 +1,6 @@
 -- Databricks notebook source
+-- Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+-- Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 -- MAGIC %md
 -- MAGIC # Vistas para el dashboard COMEX
 -- MAGIC Crea el esquema `workspace.comex_dash` con 4 vistas listas para el dashboard.

@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Baja datos REALES de UN Comtrade a una landing local, con o sin clave.
 
 Sin clave (por defecto): API pública. Argentina + 5 mercados, 3 productos, 1 año,

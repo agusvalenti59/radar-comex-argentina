@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Dimensiones de referencia (seeds versionados en data/reference).
 
 - countries.csv: M49 (Comtrade) <-> ISO3 <-> código de país INDEC, región y bloque comercial.

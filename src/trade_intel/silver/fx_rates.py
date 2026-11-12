@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Bronze -> Silver: cotizaciones BCRA (moneda/ARS) diarias y promedio mensual."""
 
 from __future__ import annotations

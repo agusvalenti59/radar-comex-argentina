@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Tarea: cotizaciones BCRA -> landing (ventana móvil de 2 años, re-escritura idempotente)."""
 
 from __future__ import annotations

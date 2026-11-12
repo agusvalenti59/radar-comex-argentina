@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Mantenimiento Delta: OPTIMIZE + VACUUM de tablas gold/silver y ANALYZE para el optimizador.
 
 En prod se puede reemplazar por Predictive Optimization de Unity Catalog (ver ADR 0001).

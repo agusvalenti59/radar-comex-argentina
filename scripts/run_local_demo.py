@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Corre el pipeline completo en local: landing (data/sample) -> bronze -> silver -> gold.
 
 Usa conf/local.yml (Spark + Parquet). Al final imprime el top de oportunidades y las

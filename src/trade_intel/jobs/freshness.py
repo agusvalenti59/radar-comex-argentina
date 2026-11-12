@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Tarea: control de frescura (SLA) por tabla. Falla el job si una fuente quedó desactualizada.
 
 Comtrade tiene rezago estructural (los países reportan con meses de demora), por eso cada

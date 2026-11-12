@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Lakeflow Declarative Pipeline (DLT): landing -> bronze -> silver para Comtrade.
 
 Mismas reglas (`TRADE_FLOW_RULES`) y mismas funciones de normalización que el camino Jobs:

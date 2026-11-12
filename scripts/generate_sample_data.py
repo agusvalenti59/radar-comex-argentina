@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Genera datos de MUESTRA SINTÉTICOS con el layout exacto de cada fuente.
 
 No son datos oficiales: sirven para correr el pipeline y los tests sin credenciales.

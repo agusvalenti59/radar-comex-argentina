@@ -1,3 +1,5 @@
+-- Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+-- Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 -- Capa semántica sobre gold: vistas que consume Power BI (DirectQuery vía SQL Warehouse).
 -- Ejecutar con: USE CATALOG trade_<env>;
 

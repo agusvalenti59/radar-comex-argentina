@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Logging estructurado en JSON: lo ingiere Log Analytics vía diagnostic settings del cluster."""
 
 from __future__ import annotations

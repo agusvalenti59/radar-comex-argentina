@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+# Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 """Sesión HTTP con reintentos exponenciales y rate limiting simple (token bucket por minuto)."""
 
 from __future__ import annotations

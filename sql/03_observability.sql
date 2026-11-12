@@ -1,3 +1,5 @@
+-- Copyright (c) 2026 Agustin Boursiac. Todos los derechos reservados.
+-- Prohibido copiar, modificar o redistribuir sin permiso escrito del autor. Ver LICENSE.
 -- Observabilidad: queries para dashboard operativo en Databricks SQL + alertas.
 
 -- 1) Éxito/duración de tareas propias (auditoría del pipeline)
